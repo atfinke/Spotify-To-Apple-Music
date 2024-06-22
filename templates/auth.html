@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Get Apple Music User Token</title>
+    <script src="https://js-cdn.music.apple.com/musickit/v1/musickit.js"></script>
+</head>
+
+<body>
+    <button id="apple-music-authorize" onclick="authorize()">Authorize Apple Music</button>
+    <button onclick="configure()">Configure MusicKit</button>
+    <button onclick="getToken()">Get User Token</button>
+    <button onclick="getUserPlaylists()">Get User Playlists</button>
+    <div id="user-token"></div>
+    <ul id="playlists"></ul>
+    <script>
+        function configure() {
+            MusicKit.configure({
+                developerToken: '<token>',
+                app: {
+                    name: 'My Music App',
+                    build: '1.0'
+                }
+            });
+        }
+
+        async function getToken() {
+            try {
+                const music = MusicKit.getInstance();
+                await music.authorize();
+                const userToken = music.musicUserToken;
+                document.getElementById('user-token').innerText = 'User Token: ' + userToken;
+            } catch (error) {
+                console.error('Error getting user token:', error);
+            }
+        }
+
+        async function getUserPlaylists() {
+            try {
+                const music = MusicKit.getInstance();
+                const library = music.api.library;
+                const playlistsResponse = await library.playlists();
+                const playlistsElement = document.getElementById('playlists');
+                playlistsElement.innerHTML = '';
+
+                const li = document.createElement('li');
+                li.textContent = playlistsResponse;
+                playlistsElement.appendChild(li);
+            } catch (error) {
+                console.error('Error getting user playlists:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>
